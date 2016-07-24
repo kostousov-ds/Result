@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.kittinunf.result</groupId>
+    <artifactId>root</artifactId>
+    <version>1.0.3.kds.1-SNAPSHOT</version>
+    <modules>
+        <module>result</module>
+    </modules>
+
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <prerequisites>
+        <maven>3.2.0</maven>
+    </prerequisites>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <git.properties>git.properties</git.properties>
+        <jdk.version>1.8</jdk.version>
+        <java.version>${jdk.version}</java.version>
+        <cargo.plugin.version>1.4.14</cargo.plugin.version>
+        <bsp.web.uri>/bsp</bsp.web.uri>
+        <frontend.web.uri>/wallet</frontend.web.uri>
+        <admin.web.uri>/walletadmin</admin.web.uri>
+        <wagon.version>2.10</wagon.version>
+        <kotlin.version>1.0.0-beta-4589</kotlin.version>
+        <gwt.version>2.7.0</gwt.version>
+        <poi.version>3.13</poi.version>
+    </properties>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>${wagon.version}</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>${wagon.version}</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-http</artifactId>
+                <version>${wagon.version}</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-http-shared</artifactId>
+                <version>${wagon.version}</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>${wagon.version}</version>
+            </extension>
+        </extensions>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <executions>
+                        <execution>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+
+                    <configuration>
+                        <!-- that's the default value, you don't have to set it -->
+                        <prefix>git</prefix>
+
+                        <!-- that's the default value -->
+                        <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+
+                        <!-- false is default here, it prints some more information during the build -->
+                        <!--<verbose>true</verbose>-->
+                        <!-- this is false by default, forces the plugin to generate the git.properties file -->
+                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+
+                        <!-- The path for the to be generated properties file, it's relative to ${project.basedir} -->
+                        <generateGitPropertiesFilename>${git.properties}</generateGitPropertiesFilename>
+                        <abbrevLength>12</abbrevLength>
+                    </configuration>
+
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <executions>
+                        <execution>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>read-project-properties</goal>
+                            </goals>
+                            <configuration>
+                                <files>
+                                    <file>${git.properties}</file>
+                                </files>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.6</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Implementation-Version>${project.version}-${git.branch}.${git.commit.id.abbrev}</Implementation-Version>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.5.1</version>
+                    <configuration>
+                        <source>${jdk.version}</source>
+                        <target>${jdk.version}</target>
+                        <encoding>UTF-8</encoding>
+                        <compilerArguments>
+                            <parameters />
+                            <!--<verbose />-->
+                            <!--                          <bootclasspath>${java.home}/lib/rt.jar</bootclasspath> -->
+                        </compilerArguments>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                    </configuration>
+                </plugin>
+                <!--
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.1</version>
+                </plugin>
+-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.4</version>
+                    <configuration>
+                        <additionalparam>-Xdoclint:none</additionalparam>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+    </build>
+
+    <repositories>
+        <repository>
+            <id>google-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spray</id>
+            <name>spray.io repo</name>
+            <url>http://repo.spray.io</url>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <name>jboss.org maven2 repo</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>maven.org</id>
+            <name>maven.org maven2 repo</name>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <scm>
+        <connection>scm:git:ssh://git@github.com:kostousov-ds/Result.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:kostousov-ds/Result.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+</project>
+
